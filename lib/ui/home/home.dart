@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:musicflutter/data/modal/song.dart';
 import 'package:musicflutter/ui/discovery/discovery.dart';
 import 'package:musicflutter/ui/home/viewmodal.dart';
+import 'package:musicflutter/ui/now_playing/playing.dart';
 import 'package:musicflutter/ui/settings/settings.dart';
 import 'package:musicflutter/ui/user/user.dart';
 
@@ -146,6 +147,45 @@ class _HomeTabPageState extends State<HomeTabPage> {
       });
     });
   }
+  void showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            height: double.infinity,
+            width: double.infinity,
+            color: Colors.grey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Text('Modal Bottom Sheet'),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Close Bottom Sheet'),
+                )
+              ],
+
+            )
+          )
+        );
+      },
+    );
+  }
+  void navigate(Song song) {
+    Navigator.push(context, 
+    CupertinoPageRoute(builder: (context){
+      return NowPlaying(
+        songs:songs,
+        playingSong: song,
+      );
+    })
+    );
+  }
 }
 
 class _songItemSection extends StatelessWidget {
@@ -171,9 +211,14 @@ class _songItemSection extends StatelessWidget {
       title: Text(song.title),
       subtitle: Text(song.artist),
       trailing: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          parent.showBottomSheet();
+        },
         icon: const Icon(Icons.more_horiz),
       ),
+      onTap: () {
+        parent.navigate(song);
+      },
     );
   }
 }

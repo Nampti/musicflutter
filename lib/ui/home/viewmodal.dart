@@ -10,5 +10,9 @@ class MusicAppViewModal {
     repository.loadData().then((value) => songStream.add(value!));
   }
 
+  void playSong(Song song) {
+    print('Playing song: ${song.title}');
+  }
+
 
 }
