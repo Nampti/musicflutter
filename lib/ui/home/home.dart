@@ -46,9 +46,15 @@ class _MusicHomePageState extends State<MusicHomePage> {
           backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.album), label: 'Discovery'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.album),
+              label: 'Discovery',
+            ),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
           ],
         ),
         tabBuilder: (BuildContext context, int index) {
@@ -89,9 +95,13 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: getBody(),
-    );
+    return Scaffold(body: getBody());
+  }
+
+  @override
+  void dispose() {
+    _viewModal.songStream.close();
+    super.dispose();
   }
 
   Widget getBody() {
@@ -104,9 +114,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   Widget getProgressBar() {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
+    return const Center(child: CircularProgressIndicator());
   }
 
   ListView getListView() {
@@ -128,10 +136,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   Widget getRow(int index) {
-    return Align(
-      alignment: Alignment.center,
-      child: Text(songs[index].title),
-    );
+    return _songItemSection(song: songs[index], parent: this);
   }
 
   void observeData() {
@@ -140,5 +145,35 @@ class _HomeTabPageState extends State<HomeTabPage> {
         songs.addAll(songList);
       });
     });
+  }
+}
+
+class _songItemSection extends StatelessWidget {
+  const _songItemSection({required this.song, required this.parent});
+  final _HomeTabPageState parent;
+  final Song song;
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: const EdgeInsets.only(left: 24, right: 16),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: FadeInImage.assetNetwork(
+          placeholder: 'assets/itune.png',
+          image: song.image,
+          width: 48,
+          height: 48,
+          imageErrorBuilder: (context, error, stackTrace) {
+            return Image.asset('assets/itune.png', width: 48, height: 48);
+          },
+        ),
+      ),
+      title: Text(song.title),
+      subtitle: Text(song.artist),
+      trailing: IconButton(
+        onPressed: () {},
+        icon: const Icon(Icons.more_horiz),
+      ),
+    );
   }
 }
