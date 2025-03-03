@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:musicflutter/data/modal/song.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:musicflutter/ui/now_playing/audio_player_manager.dart';
 
 class NowPlaying extends StatelessWidget {
   final Song playingSong;
@@ -35,9 +36,9 @@ class _NowPlayingPageState extends State<NowPlayingPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _imageAnimController;
   late AudioPlayerManager _audioPlayerManager;
-  int _currentIndex = 0; // Chỉ số bài hát hiện tại
-  bool _isRepeat = false; // Trạng thái lặp lại
-  bool _isShuffle = false; // Trạng thái phát ngẫu nhiên
+  int _currentIndex = 0;
+  bool _isRepeat = false;
+  bool _isShuffle = false;
 
   @override
   void initState() {
@@ -47,14 +48,14 @@ class _NowPlayingPageState extends State<NowPlayingPage>
       duration: const Duration(milliseconds: 12000),
     );
     _currentIndex = widget.songs.indexOf(widget.playingSong);
-    _audioPlayerManager = AudioPlayerManager(
-      songUrl: widget.playingSong.source,
-    );
+    _audioPlayerManager = AudioPlayerManager(); // Sử dụng singleton
     _audioPlayerManager.init().then((_) {
-      _audioPlayerManager.player.play();
-      _imageAnimController.repeat();
+      _audioPlayerManager.stop(); // Dừng bất kỳ âm thanh nào đang chạy
+      _audioPlayerManager.setUrl(widget.playingSong.source).then((_) {
+        _audioPlayerManager.player.play();
+        _imageAnimController.repeat();
+      });
 
-      // Set up completion listener for auto-advancing to next song
       _audioPlayerManager.player.playerStateStream.listen((state) {
         if (state.processingState == ProcessingState.completed) {
           if (_isRepeat) {
@@ -71,7 +72,7 @@ class _NowPlayingPageState extends State<NowPlayingPage>
   @override
   void dispose() {
     _imageAnimController.dispose();
-    _audioPlayerManager.dispose();
+    // Không dispose AudioPlayerManager để giữ trạng thái cho MiniPlayer
     super.dispose();
   }
 
@@ -94,11 +95,7 @@ class _NowPlayingPageState extends State<NowPlayingPage>
     setState(() {
       _currentIndex = index;
     });
-
-    // Stop current playback
-    _audioPlayerManager.player.stop();
-
-    // Set new URL instead of recreating the player
+    _audioPlayerManager.stop(); // Dừng bài hiện tại
     _audioPlayerManager.setUrl(widget.songs[index].source).then((_) {
       _audioPlayerManager.player.play();
       _imageAnimController.repeat();
@@ -109,23 +106,29 @@ class _NowPlayingPageState extends State<NowPlayingPage>
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Now Playing'),
-        trailing: Icon(CupertinoIcons.ellipsis),
-      ),
-      child: Material(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 20),
-                _buildImage(),
-                _buildSongInfo(isDarkMode),
-                _buildProgressBar(isDarkMode),
-                const SizedBox(height: 20),
-              ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, widget.songs[_currentIndex]);
+        return false;
+      },
+      child: CupertinoPageScaffold(
+        navigationBar: const CupertinoNavigationBar(
+          middle: Text('Now Playing'),
+          trailing: Icon(CupertinoIcons.ellipsis),
+        ),
+        child: Material(
+          child: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20),
+                  _buildImage(),
+                  _buildSongInfo(isDarkMode),
+                  _buildProgressBar(isDarkMode),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
@@ -251,9 +254,7 @@ class _NowPlayingPageState extends State<NowPlayingPage>
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Row(
-                  // Thay Row bằng Wrap
                   mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 8.0, // Khoảng cách ngang giữa các nút
                   children: [
                     IconButton(
                       icon: Icon(
@@ -265,13 +266,14 @@ class _NowPlayingPageState extends State<NowPlayingPage>
                                     : Theme.of(context).colorScheme.primary)
                                 : (isDarkMode ? Colors.grey[400] : Colors.grey),
                       ),
-                      iconSize: 24, // Giảm kích thước icon
+                      iconSize: 24,
                       onPressed: () {
                         setState(() {
                           _isRepeat = !_isRepeat;
                         });
                       },
                     ),
+                    const SizedBox(width: 16),
                     IconButton(
                       icon: const Icon(Icons.skip_previous),
                       iconSize: 32,
@@ -281,6 +283,7 @@ class _NowPlayingPageState extends State<NowPlayingPage>
                               : Theme.of(context).colorScheme.primary,
                       onPressed: _playPreviousSong,
                     ),
+                    const SizedBox(width: 24),
                     StreamBuilder<PlayerState>(
                       stream: _audioPlayerManager.player.playerStateStream,
                       builder: (context, snapshot) {
@@ -290,11 +293,8 @@ class _NowPlayingPageState extends State<NowPlayingPage>
                           icon: Icon(
                             playing ? Icons.pause_circle : Icons.play_circle,
                           ),
-                          iconSize: 48, // Giảm từ 64 xuống 48
-                          color:
-                              isDarkMode
-                                  ? Colors.white
-                                  : Theme.of(context).colorScheme.primary,
+                          iconSize: 48,
+                          color: isDarkMode ? Colors.teal[200] : Colors.teal,
                           onPressed: () {
                             if (playing) {
                               _audioPlayerManager.player.pause();
@@ -307,7 +307,7 @@ class _NowPlayingPageState extends State<NowPlayingPage>
                         );
                       },
                     ),
-
+                    const SizedBox(width: 24),
                     IconButton(
                       icon: const Icon(Icons.skip_next),
                       iconSize: 32,
@@ -317,6 +317,7 @@ class _NowPlayingPageState extends State<NowPlayingPage>
                               : Theme.of(context).colorScheme.primary,
                       onPressed: _playNextSong,
                     ),
+                    const SizedBox(width: 16),
                     IconButton(
                       icon: Icon(
                         Icons.shuffle,
@@ -327,7 +328,7 @@ class _NowPlayingPageState extends State<NowPlayingPage>
                                     : Theme.of(context).colorScheme.primary)
                                 : (isDarkMode ? Colors.grey[400] : Colors.grey),
                       ),
-                      iconSize: 24, // Giảm kích thước icon
+                      iconSize: 24,
                       onPressed: () {
                         setState(() {
                           _isShuffle = !_isShuffle;
@@ -350,45 +351,4 @@ class _NowPlayingPageState extends State<NowPlayingPage>
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return '$minutes:$seconds';
   }
-}
-
-class AudioPlayerManager {
-  AudioPlayerManager({required this.songUrl});
-
-  final AudioPlayer player = AudioPlayer();
-  late Stream<DurationState> durationState;
-  String songUrl;
-
-  Future<void> init() async {
-    durationState = Rx.combineLatest2<Duration, PlaybackEvent, DurationState>(
-      player.positionStream,
-      player.playbackEventStream,
-      (position, playbackEvent) => DurationState(
-        progress: position,
-        buffered: playbackEvent.bufferedPosition,
-        total: playbackEvent.duration,
-      ),
-    );
-    await player.setUrl(songUrl);
-  }
-
-  Future<void> setUrl(String url) async {
-    songUrl = url;
-    await player.setUrl(url);
-  }
-
-  void dispose() {
-    player.dispose();
-  }
-}
-
-class DurationState {
-  const DurationState({
-    required this.progress,
-    required this.buffered,
-    this.total,
-  });
-  final Duration progress;
-  final Duration buffered;
-  final Duration? total;
 }
