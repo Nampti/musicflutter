@@ -13,21 +13,28 @@ class AuthScreen extends StatelessWidget {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const HeaderSection(),
-                const SizedBox(height: 40.0),
-                SocialLoginSection(onLoginSuccess: onLoginSuccess),
-                const SizedBox(height: 20.0),
-                TextButton(
-                  onPressed: () {
-                    // Chuyển đến màn hình đăng ký (chưa triển khai)
-                  },
-                  child: const Text('Don\'t have an account? Sign Up'),
-                ),
-              ],
+            child: DefaultTextStyle(
+              style: const TextStyle(
+                fontFamily: 'sans-serif', // Set the font family to sans-serif
+                fontSize: 16.0,
+                color: Colors.black,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const HeaderSection(),
+                  const SizedBox(height: 40.0),
+                  SocialLoginSection(onLoginSuccess: onLoginSuccess),
+                  const SizedBox(height: 20.0),
+                  TextButton(
+                    onPressed: () {
+                      // Chuyển đến màn hình đăng ký (chưa triển khai)
+                    },
+                    child: const Text('Don\'t have an account? Sign Up'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -43,11 +50,19 @@ class HeaderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset('assets/itune.png', height: 100.0, width: 100.0),
+        Image.asset(
+          'assets/itune.png', // Đảm bảo tệp này tồn tại trong assets
+          height: 100.0,
+          width: 100.0,
+        ),
         const SizedBox(height: 10.0),
         const Text(
           'Welcome to Music App',
-          style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 24.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'sans-serif', // Set the font family to sans-serif
+          ),
         ),
       ],
     );
@@ -131,7 +146,11 @@ class SocialLoginButton extends StatelessWidget {
           const SizedBox(width: 12.0),
           Text(
             text,
-            style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'sans-serif', // Set the font family to sans-serif
+            ),
           ),
         ],
       ),
