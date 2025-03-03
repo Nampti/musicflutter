@@ -7,7 +7,7 @@ import 'package:musicflutter/ui/home/viewmodal.dart';
 import 'package:musicflutter/ui/now_playing/playing.dart';
 import 'package:musicflutter/ui/settings/settings.dart';
 import 'package:musicflutter/ui/user/user.dart';
-import 'package:musicflutter/ui/now_playing/audio_player_manager.dart'; // Import singleton
+import 'package:musicflutter/ui/now_playing/audio_player_manager.dart';
 
 class MusicAppp extends StatelessWidget {
   const MusicAppp({super.key});
@@ -164,39 +164,25 @@ class _HomeTabPageState extends State<HomeTabPage> {
   void showBottomSheet() {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            height: double.infinity,
-            width: double.infinity,
-            color: Colors.grey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text('Modal Bottom Sheet'),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Close Bottom Sheet'),
-                ),
-              ],
-            ),
-          ),
-        );
+      builder: (context) {
+        return const Text('Bottom Sheet');
       },
     );
   }
 
   void navigate(Song song) {
     _currentPlayingSong = song;
-    // Stop any existing playback before navigating
-    AudioPlayerManager().stop();
-    AudioPlayerManager().setUrl(song.source).then((_) {
-      AudioPlayerManager().player.play();
-    });
+    final audioManager = AudioPlayerManager();
+
+    // Chỉ setUrl và play nếu là bài hát mới hoặc chưa phát
+    if (audioManager.songUrl != song.source) {
+      audioManager.stop();
+      audioManager.setUrl(song.source).then((_) {
+        audioManager.player.play();
+      });
+    } else if (!audioManager.player.playing) {
+      audioManager.player.play(); // Tiếp tục phát nếu đã tạm dừng
+    }
 
     Navigator.push(
       context,
@@ -226,23 +212,24 @@ class _HomeTabPageState extends State<HomeTabPage> {
         },
         child: Container(
           height: 60,
-          color: Theme.of(context).colorScheme.surface,
+          color: Theme.of(context).cardColor,
           child: Row(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: FadeInImage.assetNetwork(
-                    placeholder: 'assets/itune.png',
-                    image: _currentPlayingSong!.image,
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.network(
+                    _currentPlayingSong!.image,
                     width: 44,
                     height: 44,
-                    imageErrorBuilder: (context, error, stackTrace) {
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
                         'assets/itune.png',
                         width: 44,
                         height: 44,
+                        fit: BoxFit.cover,
                       );
                     },
                   ),
@@ -257,12 +244,14 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     children: [
                       Text(
                         _currentPlayingSong!.title,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         _currentPlayingSong!.artist,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -278,9 +267,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     icon: Icon(playing ? Icons.pause : Icons.play_arrow),
                     onPressed: () {
                       if (playing) {
-                        AudioPlayerManager().player.pause();
+                        AudioPlayerManager().pause();
                       } else {
-                        AudioPlayerManager().player.play();
+                        AudioPlayerManager().play();
                       }
                     },
                   );
@@ -292,8 +281,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                   setState(() {
                     _isMiniPlayerVisible = false;
                     _currentPlayingSong = null;
-                    AudioPlayerManager()
-                        .stop(); // Stop music when closing MiniPlayer
+                    AudioPlayerManager().stop();
                   });
                 },
               ),

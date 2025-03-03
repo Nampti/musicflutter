@@ -11,7 +11,7 @@ class AudioPlayerManager {
   late Stream<DurationState> durationState;
   String? songUrl;
 
-  Future<void> init() async {
+  Future<void> init({bool isNewSong = false}) async {
     durationState = Rx.combineLatest2<Duration, PlaybackEvent, DurationState>(
       player.positionStream,
       player.playbackEventStream,
@@ -21,17 +21,29 @@ class AudioPlayerManager {
         total: playbackEvent.duration,
       ),
     );
-    if (songUrl != null) await player.setUrl(songUrl!);
+    if (isNewSong && songUrl != null) await player.setUrl(songUrl!);
   }
 
   Future<void> setUrl(String url) async {
     songUrl = url;
-    await player.stop(); // Dừng bài hiện tại
+    await player.stop();
     await player.setUrl(url);
   }
 
-  void stop() {
-    player.stop();
+  Future<void> play() async {
+    await player.play();
+  }
+
+  Future<void> pause() async {
+    await player.pause();
+  }
+
+  Future<void> stop() async {
+    await player.stop();
+  }
+
+  Future<void> seek(Duration position) async {
+    await player.seek(position);
   }
 
   void dispose() {

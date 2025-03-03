@@ -50,11 +50,22 @@ class _NowPlayingPageState extends State<NowPlayingPage>
     _currentIndex = widget.songs.indexOf(widget.playingSong);
     _audioPlayerManager = AudioPlayerManager(); // Sử dụng singleton
     _audioPlayerManager.init().then((_) {
-      _audioPlayerManager.stop(); // Dừng bất kỳ âm thanh nào đang chạy
-      _audioPlayerManager.setUrl(widget.playingSong.source).then((_) {
-        _audioPlayerManager.player.play();
+      // Kiểm tra nếu bài hát hiện tại đang phát, tiếp tục từ vị trí hiện tại
+      if (_audioPlayerManager.songUrl == widget.playingSong.source &&
+          _audioPlayerManager.player.playing) {
+        _imageAnimController.repeat(); // Tiếp tục animation
+      } else if (_audioPlayerManager.songUrl == widget.playingSong.source &&
+          !_audioPlayerManager.player.playing) {
+        _audioPlayerManager.player
+            .play(); // Tiếp tục từ vị trí hiện tại nếu tạm dừng
         _imageAnimController.repeat();
-      });
+      } else {
+        _audioPlayerManager.stop(); // Dừng nếu không khớp
+        _audioPlayerManager.setUrl(widget.playingSong.source).then((_) {
+          _audioPlayerManager.player.play();
+          _imageAnimController.repeat();
+        });
+      }
 
       _audioPlayerManager.player.playerStateStream.listen((state) {
         if (state.processingState == ProcessingState.completed) {
@@ -95,7 +106,7 @@ class _NowPlayingPageState extends State<NowPlayingPage>
     setState(() {
       _currentIndex = index;
     });
-    _audioPlayerManager.stop(); // Dừng bài hiện tại
+    _audioPlayerManager.stop();
     _audioPlayerManager.setUrl(widget.songs[index].source).then((_) {
       _audioPlayerManager.player.play();
       _imageAnimController.repeat();
