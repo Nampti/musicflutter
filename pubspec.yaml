@@ -63,3 +63,5 @@ flutter:
   assets:
     - assets/songs.json
     - assets/itune.png
+    - assets/google_logo.png
+    - assets/facebook_logo.png

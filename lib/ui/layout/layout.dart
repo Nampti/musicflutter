@@ -5,23 +5,6 @@ import 'package:musicflutter/ui/home/home.dart';
 import 'package:musicflutter/ui/settings/settings.dart';
 import 'package:musicflutter/ui/user/user.dart';
 
-class MusicAppp extends StatelessWidget {
-  const MusicAppp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Music App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-        useMaterial3: true,
-      ),
-      home: const MusicHomePage(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
 class MusicHomePage extends StatefulWidget {
   const MusicHomePage({super.key});
 

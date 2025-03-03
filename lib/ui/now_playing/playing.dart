@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:musicflutter/data/modal/song.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:musicflutter/ui/now_playing/audio_player_manager.dart';
 
 class NowPlaying extends StatelessWidget {
