@@ -71,15 +71,12 @@ class SocialLoginSection extends StatelessWidget {
           text: 'Continue with Google',
           color: Colors.white,
           textColor: Colors.black87,
-          icon: Image.asset(
-            'assets/google_logo.png', // Đảm bảo tệp này tồn tại
-            height: 24.0,
-          ),
+          icon: Image.asset('assets/google_logo.png', height: 24.0),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Google login clicked')),
             );
-            onLoginSuccess(); // Gọi hàm đăng nhập thành công
+            onLoginSuccess();
           },
         ),
         const SizedBox(height: 16.0),
@@ -87,15 +84,12 @@ class SocialLoginSection extends StatelessWidget {
           text: 'Continue with Facebook',
           color: const Color(0xFF3B5998),
           textColor: Colors.white,
-          icon: Image.asset(
-            'assets/facebook_logo.png', // Đảm bảo tệp này tồn tại
-            height: 24.0,
-          ),
+          icon: Image.asset('assets/facebook_logo.png', height: 24.0),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Facebook login clicked')),
             );
-            onLoginSuccess(); // Gọi hàm đăng nhập thành công
+            onLoginSuccess();
           },
         ),
         const SizedBox(height: 16.0),
