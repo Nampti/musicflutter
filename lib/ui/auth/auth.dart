@@ -43,11 +43,7 @@ class HeaderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(
-          'assets/itune.png', // Đảm bảo tệp này tồn tại trong assets
-          height: 100.0,
-          width: 100.0,
-        ),
+        Image.asset('assets/itune.png', height: 100.0, width: 100.0),
         const SizedBox(height: 10.0),
         const Text(
           'Welcome to Music App',

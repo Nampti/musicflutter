@@ -20,6 +20,12 @@ class _MusicApppState extends State<MusicAppp> {
     });
   }
 
+  void _onLogout() {
+    setState(() {
+      _isLoggedIn = false; // Chuyển trạng thái khi đăng xuất
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,7 +36,7 @@ class _MusicApppState extends State<MusicAppp> {
       ),
       home:
           _isLoggedIn
-              ? const MusicHomePage()
+              ? MusicHomePage(onLogout: _onLogout) // Truyền callback onLogout
               : AuthScreen(onLoginSuccess: _onLoginSuccess),
       debugShowCheckedModeBanner: false,
     );

@@ -6,19 +6,27 @@ import 'package:musicflutter/ui/settings/settings.dart';
 import 'package:musicflutter/ui/user/user.dart';
 
 class MusicHomePage extends StatefulWidget {
-  const MusicHomePage({super.key});
+  final VoidCallback onLogout; // Nhận callback từ MusicAppp
+
+  const MusicHomePage({required this.onLogout, super.key});
 
   @override
   State<MusicHomePage> createState() => _MusicHomePageState();
 }
 
 class _MusicHomePageState extends State<MusicHomePage> {
-  final List<Widget> _tabs = [
-    const HomeTab(),
-    const DiscoveryTab(),
-    const AccountTab(),
-    const SettingsTab(),
-  ];
+  late List<Widget> _tabs;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabs = [
+      const HomeTab(),
+      const DiscoveryTab(),
+      AccountTab(onLogout: widget.onLogout), // Truyền onLogout cho AccountTab
+      const SettingsTab(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
