@@ -19,6 +19,7 @@ class MusicAppp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MusicHomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -147,6 +148,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
       });
     });
   }
+
   void showBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -167,23 +169,23 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     Navigator.pop(context);
                   },
                   child: const Text('Close Bottom Sheet'),
-                )
+                ),
               ],
-
-            )
-          )
+            ),
+          ),
         );
       },
     );
   }
+
   void navigate(Song song) {
-    Navigator.push(context, 
-    CupertinoPageRoute(builder: (context){
-      return NowPlaying(
-        songs:songs,
-        playingSong: song,
-      );
-    })
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) {
+          return NowPlaying(songs: songs, playingSong: song);
+        },
+      ),
     );
   }
 }

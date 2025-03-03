@@ -2,7 +2,7 @@ class Song {
   Song({
     required this.id,
     required this.title,
-    required this.albums,
+    required this.album,
     required this.artist,
     required this.source,
     required this.image,
@@ -13,7 +13,7 @@ class Song {
     return Song(
       id: map['id'] ?? '',
       title: map['title'] ?? '',
-      albums: map['albums'] ?? '',
+      album: map['album'] ?? '',
       artist: map['artist'] ?? '',
       source: map['source'] ?? '',
       image: map['image'] ?? '',
@@ -23,7 +23,7 @@ class Song {
 
   String id;
   String title;
-  String albums;
+  String album;
   String artist;
   String source;
   String image;
@@ -39,6 +39,6 @@ class Song {
 
   @override
   String toString() {
-    return 'Song{id: $id, title: $title, albums: $albums, artist: $artist, source: $source, image: $image, duration: $duration}';
+    return 'Song{id: $id, title: $title, album: $album, artist: $artist, source: $source, image: $image, duration: $duration}';
   }
 }
