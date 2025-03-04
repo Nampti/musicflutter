@@ -40,6 +40,7 @@ dependencies:
   audio_video_progress_bar: ^2.0.3
   cached_network_image: ^3.3.0
   google_sign_in: ^6.2.2
+  google_mobile_ads: ^5.3.1
 
 dev_dependencies:
   flutter_test:

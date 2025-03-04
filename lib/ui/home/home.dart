@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:musicflutter/data/modal/song.dart';
+import 'package:musicflutter/ui/ad/InterstitialAdWidget.dart';
 import 'package:musicflutter/ui/home/viewmodal.dart';
 import 'package:musicflutter/ui/now_playing/playing.dart';
 import 'package:musicflutter/ui/now_playing/audio_player_manager.dart';
@@ -27,6 +28,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   late MusicAppViewModal _viewModal;
   Song? _currentPlayingSong;
   bool _isMiniPlayerVisible = false;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -134,6 +136,21 @@ class _HomeTabPageState extends State<HomeTabPage> {
         });
       }
     });
+  }
+
+  void _onTabChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    // Show interstitial ad at natural break points
+    if (index == 1 || index == 2) {
+      // Show interstitial ad when switching to Discovery or Account tab
+      showDialog(
+        context: context,
+        builder: (context) => const InterstitialAdWidget(),
+      );
+    }
   }
 
   Widget _buildMiniPlayer() {
@@ -261,6 +278,7 @@ class _songItemSection extends StatelessWidget {
       ),
       onTap: () {
         parent.navigate(song);
+        parent._onTabChanged;
       },
     );
   }

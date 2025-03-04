@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:musicflutter/ui/auth/auth.dart';
 import 'package:musicflutter/ui/layout/layout.dart';
 
-void main() => runApp(const MusicAppp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+  runApp(const MusicAppp());
+}
 
 class MusicAppp extends StatefulWidget {
   const MusicAppp({super.key});
